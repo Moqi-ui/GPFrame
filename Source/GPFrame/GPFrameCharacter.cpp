@@ -11,6 +11,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/SphereComponent.h"
 #include "RotatingActor.h"
+#include "Kismet/GameplayStatics.h"
+#include "FireEffect.h"
+#include "ExplosionEffect.h"
+#include "GPFrameGameMode.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AGPFrameCharacter
@@ -56,6 +60,7 @@ AGPFrameCharacter::AGPFrameCharacter()
 	SphereComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 	SphereComp->SetSphereRadius(200);
 
+	Health = 100;
 }
 
 void AGPFrameCharacter::BeginPlay()
@@ -71,6 +76,9 @@ void AGPFrameCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	//FireDelegate.BindUFunction(this, FName("TakeFireDamage"));
+	FireDelegate.BindUObject(this, &AGPFrameCharacter::TakeFireDamage);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -93,6 +101,8 @@ void AGPFrameCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 	}
 
+	//设置输入键操作，以调用Restart Player
+	PlayerInputComponent->BindAction("Restart", IE_Pressed, this, &AGPFrameCharacter::CallRestartPlayer);
 }
 
 void AGPFrameCharacter::Move(const FInputActionValue& Value)
@@ -146,6 +156,55 @@ void AGPFrameCharacter::NotifyActorEndOverlap(AActor* OtherActor)
 	}
 }
 
+void AGPFrameCharacter::TakeFireDamage()
+{
+	if (Health <= 0)
+	{
+		GetWorld()->SpawnActor<AExplosionEffect>(GetActorLocation(), GetActorRotation());
+
+		CallRestartPlayer();
+	}
+	else
+	{
+		Health = Health - 20.0f;
+	}
+
+}
+void AGPFrameCharacter::IgniteFireTimer()
+{
+	GetWorldTimerManager().SetTimer(FireTimer, FireDelegate, 0.75, true);
+	AActor* TempFireEffect = GetWorld()->SpawnActor<AFireEffect>(GetActorLocation(), GetActorRotation());
+	TempFireEffect->AttachToActor(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+}
+
+void AGPFrameCharacter::ClearFireTimer()
+{
+	GetWorldTimerManager().ClearTimer(FireTimer);
+}
 
 
+void AGPFrameCharacter::Destroyed()
+{
+	Super::Destroyed();
 
+}
+
+void AGPFrameCharacter::CallRestartPlayer()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "AGPFrameCharacter::CallRestartPlayer()");
+
+	// 获得Pawn控制器的引用。
+	AController* CortollerRef = GetController();
+
+	//销毁玩家
+	Destroy();
+
+	//在世界中获得World和GameMode，以调用其重启玩家函数。
+	if (UWorld* World = GetWorld())
+	{
+		if (AGPFrameGameMode* GameMode = Cast<AGPFrameGameMode>(World->GetAuthGameMode()))
+		{
+			GameMode->RestartPlayer(CortollerRef);
+		}
+	}
+}

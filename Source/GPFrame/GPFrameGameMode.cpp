@@ -13,3 +13,15 @@ AGPFrameGameMode::AGPFrameGameMode()
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
 }
+
+void AGPFrameGameMode::RestartPlayer(AController* NewPlayer)
+{
+	Super::RestartPlayer(NewPlayer);
+
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "RestartPlayer");
+}
+void AGPFrameGameMode::BeginPlay()
+{
+
+}

@@ -52,6 +52,8 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 			
+	UFUNCTION()
+	void TakeFireDamage();
 
 protected:
 	// APawn interface
@@ -63,10 +65,31 @@ protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor);
 	virtual void NotifyActorEndOverlap(AActor* OtherActor);
 
+protected:
+
+	//当我们的Actor在游戏过程中被销毁时调用。
+	virtual void Destroyed();
+
+	//调用GameMode类以重新启动玩家角色。
+	void CallRestartPlayer();
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	void IgniteFireTimer();
+
+	void ClearFireTimer();
+
+protected:
+
+	
+	FTimerHandle FireTimer;
+
+	FTimerDelegate FireDelegate;
+
+	float Health;
 };
 
