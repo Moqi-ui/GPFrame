@@ -1,15 +1,16 @@
 # Visual Studio 2015 user specific files
 .vs/
 
-#Content
-Content/__ExternalActors__/
-Content/__ExternalObjects__/
-Content/Characters/
-Content/Collections/
-Content/Developers/
-Content/LevelPrototyping/
-Content/StarterContent/
-Content/ThirdPerson/
+Content/*
+#Content/__ExternalActors__/
+#Content/__ExternalObjects__/
+#Content/Characters/
+#Content/Collections/
+#Content/Developers/
+#Content/LevelPrototyping/
+#Content/StarterContent/
+#Content/ThirdPerson/
+#Content/Weapons/
 
 # Compiled Object files
 *.slo

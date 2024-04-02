@@ -40,6 +40,11 @@ class AGPFrameCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 		class USphereComponent* SphereComp;
 
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "imrcao")
+		bool bIsCrouch;
+
 public:
 	AGPFrameCharacter();
 	
@@ -65,6 +70,8 @@ protected:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor);
 	virtual void NotifyActorEndOverlap(AActor* OtherActor);
 
+	virtual void Crouch();
+	virtual void UnCrouch();
 protected:
 
 	//当我们的Actor在游戏过程中被销毁时调用。
@@ -83,6 +90,8 @@ public:
 
 	void ClearFireTimer();
 
+
+
 protected:
 
 	
@@ -91,5 +100,7 @@ protected:
 	FTimerDelegate FireDelegate;
 
 	float Health;
+
+
 };
 

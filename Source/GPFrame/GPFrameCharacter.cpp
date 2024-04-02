@@ -61,6 +61,7 @@ AGPFrameCharacter::AGPFrameCharacter()
 	SphereComp->SetSphereRadius(200);
 
 	Health = 100;
+	bIsCrouch = false;
 }
 
 void AGPFrameCharacter::BeginPlay()
@@ -103,6 +104,10 @@ void AGPFrameCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 	//设置输入键操作，以调用Restart Player
 	PlayerInputComponent->BindAction("Restart", IE_Pressed, this, &AGPFrameCharacter::CallRestartPlayer);
+
+	//绑定蹲下动作
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AGPFrameCharacter::Crouch);
+	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &AGPFrameCharacter::UnCrouch);
 }
 
 void AGPFrameCharacter::Move(const FInputActionValue& Value)
@@ -207,4 +212,18 @@ void AGPFrameCharacter::CallRestartPlayer()
 			GameMode->RestartPlayer(CortollerRef);
 		}
 	}
+}
+
+void AGPFrameCharacter::Crouch()
+{
+	Super::Crouch();
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "AGPFrameCharacter::Crouch()");
+	bIsCrouch = true;
+}
+void AGPFrameCharacter::UnCrouch()
+{
+	Super::UnCrouch();
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, "AGPFrameCharacter::UnCrouch()");
+
+	bIsCrouch = false;
 }
